@@ -6,9 +6,44 @@ import { ApiKey } from '@/types/apiKey';
 
 const PASS_PHRASE = 'password';
 
+// Mock data for demonstration purposes
+const MOCK_DATA: ApiKey[] = [
+  {
+    id: 'mock-1',
+    name: 'Production API Key',
+    key: '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',
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+    lastUsed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    isActive: true
+  },
+  {
+    id: 'mock-2',
+    name: 'Development API Key',
+    key: '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',
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
+    lastUsed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    isActive: true
+  },
+  {
+    id: 'mock-3',
+    name: 'Testing API Key',
+    key: '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',
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    isActive: false
+  },
+  {
+    id: 'mock-4',
+    name: 'Staging API Key',
+    key: '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',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
+    lastUsed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    isActive: true
+  }
+];
+
 export default function Dashboard() {
   const {
-    apiKeys,
+    apiKeys: realApiKeys,
     loading,
     error: generalError,
     fetchApiKeys,
@@ -16,6 +51,9 @@ export default function Dashboard() {
     updateApiKey,
     deleteApiKey,
   } = useApiKeys();
+
+  const [useMockData, setUseMockData] = useState(true);
+  const apiKeys = useMockData ? MOCK_DATA : realApiKeys;
 
   const [newKeyName, setNewKeyName] = useState('');
   const [showNewKey, setShowNewKey] = useState<ApiKey | null>(null);
@@ -40,9 +78,17 @@ export default function Dashboard() {
     });
   }, [fetchApiKeys]);
 
+  // Check if we should use real data
+  useEffect(() => {
+    if (realApiKeys.length > 0) {
+      setUseMockData(false);
+    }
+  }, [realApiKeys]);
+
   const handleCreateKey = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorDialog(null);
+    setUseMockData(false); // Switch to real data when creating a key
     
     try {
       const newKey = await createApiKey({ name: newKeyName });
@@ -61,6 +107,12 @@ export default function Dashboard() {
   };
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
+    // Don't update mock data
+    if (useMockData) {
+      setErrorDialog("This is demo data. Create your own API key to enable full functionality.");
+      return;
+    }
+
     try {
       await updateApiKey(id, { isActive: !isActive });
     } catch (error) {
@@ -70,6 +122,12 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (id: string) => {
+    // Don't delete mock data
+    if (useMockData) {
+      setErrorDialog("This is demo data. Create your own API key to enable full functionality.");
+      return;
+    }
+
     if (window.confirm('Are you sure you want to delete this API key?')) {
       try {
         await deleteApiKey(id);
@@ -86,6 +144,21 @@ export default function Dashboard() {
   };
 
   const handleRevealKey = (id: string) => {
+    // Only allow revealing real keys with passphrase
+    if (useMockData) {
+      // For mock data, just toggle revealed state without passphrase
+      setRevealedKeys(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(id)) {
+          newSet.delete(id);
+        } else {
+          newSet.add(id);
+        }
+        return newSet;
+      });
+      return;
+    }
+
     setShowPassPhraseInput(id);
     setPassPhrase('');
     setPassPhraseError(false);
@@ -110,12 +183,34 @@ export default function Dashboard() {
     });
   };
 
-  if (loading) {
+  // Show switch to real data prompt
+  const switchToRealData = () => {
+    setUseMockData(false);
+  };
+
+  if (loading && !useMockData) {
     return <div className="p-8">Loading...</div>;
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      {/* Demo Data Notification */}
+      {useMockData && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex justify-between items-start">
+          <div>
+            <h3 className="font-bold text-blue-800 mb-1">Demo Mode</h3>
+            <p className="text-blue-700">You're viewing sample data. Create your own API key to start managing real data.</p>
+          </div>
+          <button
+            onClick={switchToRealData}
+            className="text-gray-500 hover:text-gray-700"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Error Dialog */}
       {errorDialog && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex justify-between items-start">
@@ -159,9 +254,11 @@ export default function Dashboard() {
         <div className="mb-1 text-white/80">Plan</div>
         <div className="flex items-center justify-between mb-4">
           <div className="w-full h-2 bg-white/30 rounded-full overflow-hidden">
-            <div className="h-full bg-white" style={{ width: '0%' }}></div>
+            <div className="h-full bg-white" style={{ width: useMockData ? '15%' : '0%' }}></div>
           </div>
-          <div className="ml-4 text-white whitespace-nowrap">0 / 1,000 Credits</div>
+          <div className="ml-4 text-white whitespace-nowrap">
+            {useMockData ? '150' : '0'} / 1,000 Credits
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -276,7 +373,7 @@ export default function Dashboard() {
                 <tr key={key.id} className="border-b">
                   <td className="py-4 px-2">{key.name}</td>
                   <td className="py-4 px-2 text-gray-500">dev</td>
-                  <td className="py-4 px-2 text-gray-500">0</td>
+                  <td className="py-4 px-2 text-gray-500">{useMockData ? Math.floor(Math.random() * 50) : 0}</td>
                   <td className="py-4 px-2 font-mono text-sm">
                     {revealedKeys.has(key.id) ? key.key : maskApiKey(key.key)}
                   </td>
@@ -306,7 +403,7 @@ export default function Dashboard() {
                         </button>
                       )}
                       <button
-                        onClick={() => {navigator.clipboard.writeText(key.key)}}
+                        onClick={() => navigator.clipboard.writeText(key.key)}
                         className="text-gray-500 hover:text-gray-700"
                         title="Copy"
                       >

@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
 import { ApiKey, CreateApiKeyDto } from '@/types/apiKey';
-
-// In-memory storage for demo purposes
-// In a real application, you would use a database
-let apiKeys: ApiKey[] = [];
+import { apiKeyStorage } from '@/lib/apiKeyStorage';
 
 export async function GET() {
-  return NextResponse.json(apiKeys);
+  return NextResponse.json(apiKeyStorage.getAll());
 }
 
 export async function POST(request: Request) {
@@ -21,8 +18,8 @@ export async function POST(request: Request) {
       isActive: true,
     };
 
-    apiKeys.push(newApiKey);
-    return NextResponse.json(newApiKey);
+    const createdKey = apiKeyStorage.add(newApiKey);
+    return NextResponse.json(createdKey);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to create API key' },

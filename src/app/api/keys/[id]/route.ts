@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { UpdateApiKeyDto } from '@/types/apiKey';
-
-// In-memory storage for demo purposes
-// In a real application, you would use a database
-let apiKeys: any[] = [];
+import { apiKeyStorage } from '@/lib/apiKeyStorage';
 
 export async function PATCH(
   request: Request,
@@ -11,17 +8,16 @@ export async function PATCH(
 ) {
   try {
     const data: UpdateApiKeyDto = await request.json();
-    const apiKey = apiKeys.find(key => key.id === params.id);
+    const updatedKey = apiKeyStorage.update(params.id, data);
 
-    if (!apiKey) {
+    if (!updatedKey) {
       return NextResponse.json(
         { error: 'API key not found' },
         { status: 404 }
       );
     }
 
-    Object.assign(apiKey, data);
-    return NextResponse.json(apiKey);
+    return NextResponse.json(updatedKey);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to update API key' },
@@ -35,16 +31,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const index = apiKeys.findIndex(key => key.id === params.id);
+    const success = apiKeyStorage.delete(params.id);
 
-    if (index === -1) {
+    if (!success) {
       return NextResponse.json(
         { error: 'API key not found' },
         { status: 404 }
       );
     }
 
-    apiKeys.splice(index, 1);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

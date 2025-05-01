@@ -6,7 +6,9 @@ export const apiKeyService = {
   async getAll(): Promise<ApiKey[]> {
     const response = await fetch(API_BASE_URL);
     if (!response.ok) {
-      throw new Error('Failed to fetch API keys');
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to fetch API keys';
+      throw new Error(errorMessage);
     }
     return response.json();
   },
@@ -19,9 +21,13 @@ export const apiKeyService = {
       },
       body: JSON.stringify(data),
     });
+    
     if (!response.ok) {
-      throw new Error('Failed to create API key');
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to create API key';
+      throw new Error(errorMessage);
     }
+    
     return response.json();
   },
 
@@ -33,9 +39,13 @@ export const apiKeyService = {
       },
       body: JSON.stringify(data),
     });
+    
     if (!response.ok) {
-      throw new Error('Failed to update API key');
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to update API key';
+      throw new Error(errorMessage);
     }
+    
     return response.json();
   },
 
@@ -43,8 +53,11 @@ export const apiKeyService = {
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'DELETE',
     });
+    
     if (!response.ok) {
-      throw new Error('Failed to delete API key');
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to delete API key';
+      throw new Error(errorMessage);
     }
   },
 }; 

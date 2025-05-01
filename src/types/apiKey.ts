@@ -1,10 +1,10 @@
 export interface ApiKey {
-  id: string;
-  name: string;
-  key: string;
-  createdAt: string;
-  lastUsed?: string;
-  isActive: boolean;
+  id: string;                // maps to 'id' in database
+  name: string;              // maps to 'name' in database
+  key: string;               // maps to 'key' in database
+  createdAt: string;         // maps to 'created_at' in database
+  lastUsed?: string;         // maps to 'last_used' in database
+  isActive: boolean;         // maps to 'is_active' in database
 }
 
 export interface CreateApiKeyDto {
@@ -13,5 +13,5 @@ export interface CreateApiKeyDto {
 
 export interface UpdateApiKeyDto {
   name?: string;
-  isActive?: boolean;
+  isActive?: boolean;        // maps to 'is_active' in database
 } 

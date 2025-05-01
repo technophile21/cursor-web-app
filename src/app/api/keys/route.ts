@@ -1,38 +1,33 @@
 import { NextResponse } from 'next/server';
-import { ApiKey, CreateApiKeyDto } from '@/types/apiKey';
-import { apiKeyStorage } from '@/lib/apiKeyStorage';
+import { CreateApiKeyDto } from '@/types/apiKey';
+import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function GET() {
-  return NextResponse.json(apiKeyStorage.getAll());
+  try {
+    const apiKeys = await supabaseApiKeyService.getAll();
+    return NextResponse.json(apiKeys);
+  } catch (error) {
+    console.error('Error fetching API keys:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch API keys' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const data: CreateApiKeyDto = await request.json();
     
-    // Validate name uniqueness before creating the key
-    if (!apiKeyStorage.isNameUnique(data.name)) {
-      return NextResponse.json(
-        { error: 'API key name must be unique' },
-        { status: 400 }
-      );
-    }
-    
-    const newApiKey: ApiKey = {
-      id: crypto.randomUUID(),
-      name: data.name,
-      key: `sk-${crypto.randomUUID()}`,
-      createdAt: new Date().toISOString(),
-      isActive: true,
-    };
-
-    const createdKey = apiKeyStorage.add(newApiKey);
-    return NextResponse.json(createdKey);
+    const newApiKey = await supabaseApiKeyService.create(data);
+    return NextResponse.json(newApiKey);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to create API key';
+    const status = errorMessage.includes('unique') ? 400 : 500;
+    
     return NextResponse.json(
       { error: errorMessage },
-      { status: 400 }
+      { status }
     );
   }
 } 

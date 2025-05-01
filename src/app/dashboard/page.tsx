@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useApiKeys } from '@/hooks/useApiKeys';
 import { ApiKey } from '@/types/apiKey';
 import CreateApiKeyDialog from '@/components/CreateApiKeyDialog';
+import Toast from '@/components/Toast';
 
 const PASS_PHRASE = 'password';
 
@@ -65,6 +66,7 @@ export default function Dashboard() {
   const [errorDialog, setErrorDialog] = useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [payAsYouGo, setPayAsYouGo] = useState(false);
+  const [showCopyToast, setShowCopyToast] = useState(false);
 
   // Show general error in error dialog
   useEffect(() => {
@@ -175,6 +177,15 @@ export default function Dashboard() {
   // Show switch to real data prompt
   const switchToRealData = () => {
     setUseMockData(false);
+  };
+
+  const handleCopyKey = async (key: string) => {
+    try {
+      await navigator.clipboard.writeText(key);
+      setShowCopyToast(true);
+    } catch (error) {
+      setErrorDialog('Failed to copy API key to clipboard');
+    }
   };
 
   if (loading && !useMockData) {
@@ -349,7 +360,7 @@ export default function Dashboard() {
                         </button>
                       )}
                       <button
-                        onClick={() => navigator.clipboard.writeText(key.key)}
+                        onClick={() => handleCopyKey(key.key)}
                         className="text-gray-500 hover:text-gray-700"
                         title="Copy"
                       >
@@ -437,6 +448,14 @@ export default function Dashboard() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Add Toast at the end of the component, just before the closing div */}
+      {showCopyToast && (
+        <Toast
+          message="API key copied to clipboard"
+          onClose={() => setShowCopyToast(false)}
+        />
       )}
     </div>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useApiKeys } from '@/hooks/useApiKeys';
 import { ApiKey } from '@/types/apiKey';
+import CreateApiKeyDialog from '@/components/CreateApiKeyDialog';
 
 const PASS_PHRASE = 'password';
 
@@ -62,7 +63,7 @@ export default function Dashboard() {
   const [showPassPhraseInput, setShowPassPhraseInput] = useState<string | null>(null);
   const [passPhraseError, setPassPhraseError] = useState(false);
   const [errorDialog, setErrorDialog] = useState<string | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [payAsYouGo, setPayAsYouGo] = useState(false);
 
   // Show general error in error dialog
@@ -85,25 +86,13 @@ export default function Dashboard() {
     }
   }, [realApiKeys]);
 
-  const handleCreateKey = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateKey = async (data: { name: string }) => {
     setErrorDialog(null);
     setUseMockData(false); // Switch to real data when creating a key
     
-    try {
-      const newKey = await createApiKey({ name: newKeyName });
-      setShowNewKey(newKey);
-      setNewKeyName('');
-      setShowCreateForm(false);
-    } catch (error) {
-      // Error is already set in the error dialog by the generalError effect
-      // Just handle UI-specific logic, no need to rethrow or log
-      if (error instanceof Error && !error.message.includes('unique')) {
-        // We want to preserve the name only for uniqueness errors
-        // For other errors, it might be a good idea to clear it
-        // setNewKeyName('');
-      }
-    }
+    const newKey = await createApiKey({ name: data.name });
+    setShowNewKey(newKey);
+    return newKey;
   };
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
@@ -299,7 +288,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">API Keys</h2>
           <button 
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => setIsCreateDialogOpen(true)}
             className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-gray-100"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -312,49 +301,6 @@ export default function Dashboard() {
           The key is used to authenticate your requests to the <a href="#" className="text-blue-600 hover:underline">Research API</a>.
           To learn more, see the <a href="#" className="text-blue-600 hover:underline">documentation</a> page.
         </p>
-
-        {/* Create new API key form */}
-        {showCreateForm && (
-          <form onSubmit={handleCreateKey} className="mb-6 p-4 border rounded-lg bg-gray-50">
-            <h3 className="font-medium mb-3">Create new API key</h3>
-            <div className="flex flex-col gap-4">
-              <div>
-                <label htmlFor="keyName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  id="keyName"
-                  type="text"
-                  value={newKeyName}
-                  onChange={(e) => {
-                    setNewKeyName(e.target.value);
-                    if (errorDialog && errorDialog.includes('unique')) {
-                      setErrorDialog(null);
-                    }
-                  }}
-                  placeholder="Enter API key name"
-                  className="w-full px-3 py-2 text-sm border rounded-md"
-                  required
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
 
         {/* API Keys Table */}
         <div className="overflow-x-auto">
@@ -445,6 +391,13 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Create API Key Dialog */}
+      <CreateApiKeyDialog 
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSubmit={handleCreateKey}
+      />
 
       {/* Passphrase Modal */}
       {showPassPhraseInput && (

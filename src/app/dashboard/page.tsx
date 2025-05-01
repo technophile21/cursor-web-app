@@ -10,7 +10,7 @@ export default function Dashboard() {
   const {
     apiKeys,
     loading,
-    error,
+    error: generalError,
     fetchApiKeys,
     createApiKey,
     updateApiKey,
@@ -23,24 +23,36 @@ export default function Dashboard() {
   const [passPhrase, setPassPhrase] = useState('');
   const [showPassPhraseInput, setShowPassPhraseInput] = useState<string | null>(null);
   const [passPhraseError, setPassPhraseError] = useState(false);
-  const [nameError, setNameError] = useState<string | null>(null);
+  const [errorDialog, setErrorDialog] = useState<string | null>(null);
+
+  // Show general error in error dialog
+  useEffect(() => {
+    if (generalError) {
+      setErrorDialog(generalError);
+    }
+  }, [generalError]);
 
   useEffect(() => {
-    fetchApiKeys();
+    fetchApiKeys().catch(() => {
+      // Error is already handled by the hook and displayed through the generalError state
+    });
   }, [fetchApiKeys]);
 
   const handleCreateKey = async (e: React.FormEvent) => {
     e.preventDefault();
-    setNameError(null);
+    setErrorDialog(null);
+    
     try {
       const newKey = await createApiKey({ name: newKeyName });
       setShowNewKey(newKey);
       setNewKeyName('');
     } catch (error) {
-      if (error instanceof Error && error.message.includes('unique')) {
-        setNameError('API key name must be unique');
-      } else {
-        console.error('Failed to create API key:', error);
+      // Error is already set in the error dialog by the generalError effect
+      // Just handle UI-specific logic, no need to rethrow or log
+      if (error instanceof Error && !error.message.includes('unique')) {
+        // We want to preserve the name only for uniqueness errors
+        // For other errors, it might be a good idea to clear it
+        // setNewKeyName('');
       }
     }
   };
@@ -49,7 +61,8 @@ export default function Dashboard() {
     try {
       await updateApiKey(id, { isActive: !isActive });
     } catch (error) {
-      console.error('Failed to update API key:', error);
+      // Error is already set in the error dialog by the generalError effect
+      // No need to do anything here
     }
   };
 
@@ -58,7 +71,8 @@ export default function Dashboard() {
       try {
         await deleteApiKey(id);
       } catch (error) {
-        console.error('Failed to delete API key:', error);
+        // Error is already set in the error dialog by the generalError effect
+        // No need to do anything here
       }
     }
   };
@@ -97,41 +111,49 @@ export default function Dashboard() {
     return <div className="p-8">Loading...</div>;
   }
 
-  if (error) {
-    return <div className="p-8 text-red-500">Error: {error}</div>;
-  }
-
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-8">API Keys Management</h1>
 
+      {/* Error Dialog */}
+      {errorDialog && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded flex justify-between items-start">
+          <div>
+            <h3 className="font-bold text-red-800 mb-1">Error</h3>
+            <p className="text-red-700">{errorDialog}</p>
+          </div>
+          <button
+            onClick={() => setErrorDialog(null)}
+            className="text-gray-500 hover:text-gray-700"
+            aria-label="Dismiss error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Create new API key form */}
       <form onSubmit={handleCreateKey} className="mb-8">
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={newKeyName}
-              onChange={(e) => {
-                setNewKeyName(e.target.value);
-                setNameError(null);
-              }}
-              placeholder="Enter API key name"
-              className={`flex-1 px-4 py-2 border rounded ${
-                nameError ? 'border-red-500' : ''
-              }`}
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Create New Key
-            </button>
-          </div>
-          {nameError && (
-            <p className="text-sm text-red-500">{nameError}</p>
-          )}
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={newKeyName}
+            onChange={(e) => {
+              setNewKeyName(e.target.value);
+              if (errorDialog && errorDialog.includes('unique')) {
+                setErrorDialog(null);
+              }
+            }}
+            placeholder="Enter API key name"
+            className="flex-1 px-4 py-2 border rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Create New Key
+          </button>
         </div>
       </form>
 

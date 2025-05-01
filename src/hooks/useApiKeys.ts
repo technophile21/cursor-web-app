@@ -21,46 +21,55 @@ export const useApiKeys = () => {
   }, []);
 
   const createApiKey = useCallback(async (data: CreateApiKeyDto) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
       const newApiKey = await apiKeyService.create(data);
       setApiKeys(prev => [...prev, newApiKey]);
+      setLoading(false);
       return newApiKey;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      throw err;
-    } finally {
       setLoading(false);
+      // Set the error state but don't throw again - this prevents console errors
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      // Still throw the error for the component to handle UI feedback
+      throw err;
     }
   }, []);
 
   const updateApiKey = useCallback(async (id: string, data: UpdateApiKeyDto) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
       const updatedApiKey = await apiKeyService.update(id, data);
       setApiKeys(prev => prev.map(key => key.id === id ? updatedApiKey : key));
+      setLoading(false);
       return updatedApiKey;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      throw err;
-    } finally {
       setLoading(false);
+      // Set the error state but don't throw again - this prevents console errors
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      // Still throw the error for the component to handle UI feedback
+      throw err;
     }
   }, []);
 
   const deleteApiKey = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
       await apiKeyService.delete(id);
       setApiKeys(prev => prev.filter(key => key.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      throw err;
-    } finally {
       setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      // Set the error state but don't throw again - this prevents console errors
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      // Still throw the error for the component to handle UI feedback
+      throw err;
     }
   }, []);
 

@@ -23,6 +23,7 @@ export default function Dashboard() {
   const [passPhrase, setPassPhrase] = useState('');
   const [showPassPhraseInput, setShowPassPhraseInput] = useState<string | null>(null);
   const [passPhraseError, setPassPhraseError] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApiKeys();
@@ -30,12 +31,17 @@ export default function Dashboard() {
 
   const handleCreateKey = async (e: React.FormEvent) => {
     e.preventDefault();
+    setNameError(null);
     try {
       const newKey = await createApiKey({ name: newKeyName });
       setShowNewKey(newKey);
       setNewKeyName('');
     } catch (error) {
-      console.error('Failed to create API key:', error);
+      if (error instanceof Error && error.message.includes('unique')) {
+        setNameError('API key name must be unique');
+      } else {
+        console.error('Failed to create API key:', error);
+      }
     }
   };
 
@@ -101,21 +107,31 @@ export default function Dashboard() {
 
       {/* Create new API key form */}
       <form onSubmit={handleCreateKey} className="mb-8">
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={newKeyName}
-            onChange={(e) => setNewKeyName(e.target.value)}
-            placeholder="Enter API key name"
-            className="flex-1 px-4 py-2 border rounded"
-            required
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Create New Key
-          </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={newKeyName}
+              onChange={(e) => {
+                setNewKeyName(e.target.value);
+                setNameError(null);
+              }}
+              placeholder="Enter API key name"
+              className={`flex-1 px-4 py-2 border rounded ${
+                nameError ? 'border-red-500' : ''
+              }`}
+              required
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Create New Key
+            </button>
+          </div>
+          {nameError && (
+            <p className="text-sm text-red-500">{nameError}</p>
+          )}
         </div>
       </form>
 

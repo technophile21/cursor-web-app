@@ -8,6 +8,15 @@ export async function PATCH(
 ) {
   try {
     const data: UpdateApiKeyDto = await request.json();
+
+    // Validate name uniqueness if name is being updated
+    if (data.name && !apiKeyStorage.isNameUnique(data.name, params.id)) {
+      return NextResponse.json(
+        { error: 'API key name must be unique' },
+        { status: 400 }
+      );
+    }
+
     const updatedKey = apiKeyStorage.update(params.id, data);
 
     if (!updatedKey) {
@@ -19,8 +28,9 @@ export async function PATCH(
 
     return NextResponse.json(updatedKey);
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update API key';
     return NextResponse.json(
-      { error: 'Failed to update API key' },
+      { error: errorMessage },
       { status: 400 }
     );
   }
@@ -42,8 +52,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete API key';
     return NextResponse.json(
-      { error: 'Failed to delete API key' },
+      { error: errorMessage },
       { status: 400 }
     );
   }

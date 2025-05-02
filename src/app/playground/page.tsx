@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { strings } from '@/constants/strings';
 import Toast from '@/components/Toast';
+import Sidebar from '@/components/Sidebar';
 
 export default function PlaygroundPage() {
   const router = useRouter();
   const [apiKey, setApiKey] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,39 +39,44 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">{strings.playground_title}</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-md">
-        <div className="mb-4">
-          <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
-            {strings.api_key_label}
-          </label>
-          <input
-            type="text"
-            id="apiKey"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder={strings.playground_api_key_placeholder}
-            required
-            disabled={loading}
-          />
+    <div className="relative min-h-screen">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)} />
+      <main className={sidebarOpen ? 'ml-64 px-6 pt-6 transition-all duration-200' : 'px-6 pt-6 transition-all duration-200'}>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h1 className="text-2xl font-bold mb-4">{strings.playground_title}</h1>
+          <form onSubmit={handleSubmit} className="w-full max-w-md">
+            <div className="mb-4">
+              <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
+                {strings.api_key_label}
+              </label>
+              <input
+                type="text"
+                id="apiKey"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder={strings.playground_api_key_placeholder}
+                required
+                disabled={loading}
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? strings.playground_submit_loading : strings.playground_submit_button}
+            </button>
+          </form>
+          {toast && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
+          )}
         </div>
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? strings.playground_submit_loading : strings.playground_submit_button}
-        </button>
-      </form>
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      </main>
     </div>
   );
 } 

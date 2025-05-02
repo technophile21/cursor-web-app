@@ -4,11 +4,11 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function PATCH(
   request: NextRequest,
-  params: { id: string }
+  context: { params: { id: string } }
 ) {
   try {
     const data: UpdateApiKeyDto = await request.json();
-    const updatedKey = await supabaseApiKeyService.update(params.id, data);
+    const updatedKey = await supabaseApiKeyService.update(context.params.id, data);
 
     return NextResponse.json(updatedKey);
   } catch (error) {
@@ -25,10 +25,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  params:  { id: string }
+  context: { params: { id: string } }
 ) {
   try {
-    await supabaseApiKeyService.delete(params.id);
+    const { id } = context.params;
+    await supabaseApiKeyService.delete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete API key';

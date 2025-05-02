@@ -2,17 +2,11 @@ import { useState, useCallback } from 'react';
 import { ApiKey } from '@/types/apiKey';
 
 export function useApiKeysTableController({
-  apiKeys,
   updateApiKey,
   deleteApiKey,
-  createApiKey,
-  useMockData,
 }: {
-  apiKeys: ApiKey[];
-  updateApiKey: (id: string, data: Partial<ApiKey>) => Promise<any>;
-  deleteApiKey: (id: string) => Promise<any>;
-  createApiKey?: (data: { name: string }) => Promise<ApiKey>;
-  useMockData: boolean;
+  updateApiKey: (id: string, data: Partial<ApiKey>) => Promise<unknown>;
+  deleteApiKey: (id: string) => Promise<unknown>;
 }) {
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [showCopyToast, setShowCopyToast] = useState(false);

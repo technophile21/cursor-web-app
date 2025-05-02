@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     }
     const isValid = await supabaseApiKeyService.validateKey(apiKey);
     return NextResponse.json({ valid: isValid });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ valid: false, error: 'Server error' }, { status: 500 });
   }
 } 

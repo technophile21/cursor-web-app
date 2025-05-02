@@ -31,7 +31,7 @@ export default function PlaygroundPage() {
       } else {
         setToast({ message: 'api_key_invalid', type: 'error' });
       }
-    } catch (error) {
+    } catch {
       setToast({ message: 'api_key_validation_error', type: 'error' });
     } finally {
       setLoading(false);

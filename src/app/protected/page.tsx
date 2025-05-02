@@ -23,7 +23,7 @@ export default function ProtectedPage() {
         } else {
           setToast({ message: 'api_key_invalid', type: 'error' });
         }
-      } catch (e) {
+      } catch {
         setToast({ message: 'api_key_validation_error', type: 'error' });
       }
     }

@@ -2,25 +2,37 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { strings } from '@/constants/strings';
+import Toast from '@/components/Toast';
 
 export default function PlaygroundPage() {
   const router = useRouter();
   const [apiKey, setApiKey] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(strings.playground_form_submit_log, apiKey);
-    
-    if (apiKey.trim()) {
-      const url = `/protected?apiKey=${encodeURIComponent(apiKey)}`;
-      console.log(strings.playground_redirect_log, url);
-      try {
-        window.location.href = url;
-      } catch (error) {
-        console.error(strings.playground_navigation_error_log, error);
+    setToast(null);
+    setLoading(true);
+    try {
+      const res = await fetch('/api/validate-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setToast({ message: 'api_key_valid', type: 'success' });
+        setTimeout(() => {
+          router.push(`/protected?apiKey=${encodeURIComponent(apiKey)}`);
+        }, 1000);
+      } else {
+        setToast({ message: 'api_key_invalid', type: 'error' });
       }
-    } else {
-      console.log(strings.playground_api_key_empty_log);
+    } catch (error) {
+      setToast({ message: 'api_key_validation_error', type: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,23 +48,28 @@ export default function PlaygroundPage() {
             type="text"
             id="apiKey"
             value={apiKey}
-            onChange={(e) => {
-              console.log(strings.playground_input_changed_log, e.target.value);
-              setApiKey(e.target.value);
-            }}
+            onChange={(e) => setApiKey(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             placeholder={strings.playground_api_key_placeholder}
             required
+            disabled={loading}
           />
         </div>
         <button
           type="submit"
-          onClick={() => console.log(strings.playground_submit_button_log)}
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          disabled={loading}
         >
-          {strings.playground_submit_button}
+          {loading ? strings.playground_submit_loading : strings.playground_submit_button}
         </button>
       </form>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 } 

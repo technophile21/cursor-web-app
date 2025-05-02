@@ -68,6 +68,7 @@ export default function Dashboard() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [payAsYouGo, setPayAsYouGo] = useState(false);
   const [showCopyToast, setShowCopyToast] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Show general error in error dialog
   useEffect(() => {
@@ -195,8 +196,8 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen">
-      <Sidebar />
-      <main className="ml-64 px-6 pt-6">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)} />
+      <main className={sidebarOpen ? "ml-64 px-6 pt-6 transition-all duration-200" : "px-6 pt-6 transition-all duration-200"}>
         <div className="max-w-6xl mx-auto p-6">
           {/* Demo Data Notification */}
           {useMockData && (
@@ -233,7 +234,7 @@ export default function Dashboard() {
           )}
 
           {/* Plan Information Card */}
-          <div className="mb-10 p-8 rounded-2xl bg-gradient-to-r from-pink-200 via-purple-300 to-blue-300 shadow-md">
+          <div className="mb-10 p-8 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-blue-600 shadow-md">
             <div className="flex justify-between items-start mb-6">
               <div className="bg-white/30 px-3 py-1 rounded-md text-sm font-medium">
                 CURRENT PLAN

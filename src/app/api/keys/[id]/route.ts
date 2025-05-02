@@ -4,7 +4,7 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  params: { id: string }
 ) {
   try {
     const data: UpdateApiKeyDto = await request.json();
@@ -25,7 +25,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  params:  { id: string }
 ) {
   try {
     await supabaseApiKeyService.delete(params.id);

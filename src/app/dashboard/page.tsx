@@ -63,7 +63,6 @@ function DashboardContent() {
   const [useMockData, setUseMockData] = useState(true);
   const apiKeys = useMockData ? MOCK_DATA : realApiKeys;
 
-  const [newKeyName, setNewKeyName] = useState('');
   const [showNewKey, setShowNewKey] = useState<ApiKey | null>(null);
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [showPassPhraseInput, setShowPassPhraseInput] = useState<string | null>(null);

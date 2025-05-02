@@ -4,11 +4,12 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: any 
 ) {
+  const { id } = context.params;  
   try {
     const data: UpdateApiKeyDto = await request.json();
-    const updatedKey = await supabaseApiKeyService.update(context.params.id, data);
+    const updatedKey = await supabaseApiKeyService.update(id, data);
 
     return NextResponse.json(updatedKey);
   } catch (error) {
@@ -25,10 +26,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: any
 ) {
+  const { id } = context.params;
   try {
-    const { id } = context.params;
     await supabaseApiKeyService.delete(id);
     return NextResponse.json({ success: true });
   } catch (error) {

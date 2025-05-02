@@ -50,7 +50,7 @@ export default function Sidebar({ open, onClose, onOpen }: SidebarProps) {
           {/* Navigation */}
           <nav className="flex flex-col gap-1 px-2">
             <SidebarLink href="/dashboard" icon={<FaHome />} label="Overview" />
-            <SidebarLink href="#" icon={<FaCode />} label="API Playground" />
+            <SidebarLink href="/playground" icon={<FaCode />} label="API Playground" />
             <SidebarLink href="#" icon={<FaListUl />} label="Use Cases" />
             <SidebarLink href="#" icon={<FaCreditCard />} label="Billing" />
             <SidebarLink href="#" icon={<FaCog />} label="Settings" />

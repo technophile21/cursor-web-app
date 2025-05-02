@@ -103,10 +103,8 @@ function DashboardContent() {
 
   // Table controller for API keys table operations
   const tableController = useApiKeysTableController({
-    apiKeys,
     updateApiKey,
     deleteApiKey,
-    useMockData,
   });
 
   // Handler for requesting reveal (opens passphrase modal)

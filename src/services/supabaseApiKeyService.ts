@@ -125,4 +125,14 @@ export const supabaseApiKeyService = {
       throw new Error('Failed to delete API key');
     }
   },
+
+  async validateKey(key: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select('id')
+      .eq('key', key)
+      .eq('is_active', true)
+      .single();
+    return !!(data && !error);
+  },
 }; 

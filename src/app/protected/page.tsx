@@ -2,12 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Toast from '@/components/Toast';
-
-// Dummy validation function
-function validateApiKey(apiKey: string) {
-  // Replace with real validation logic as needed
-  return apiKey && apiKey.startsWith('tvly-dev-');
-}
+import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export default function ProtectedPage() {
   const searchParams = useSearchParams();
@@ -16,11 +11,21 @@ export default function ProtectedPage() {
 
   useEffect(() => {
     if (!apiKey) return;
-    if (validateApiKey(apiKey)) {
-      setToast({ message: 'Valid API key', type: 'success' });
-    } else {
-      setToast({ message: 'Invalid API key', type: 'error' });
+
+    async function validate() {
+      try {
+        const isValid = await supabaseApiKeyService.validateKey(apiKey);
+        if (isValid) {
+          setToast({ message: 'Valid API key', type: 'success' });
+        } else {
+          setToast({ message: 'Invalid API key', type: 'error' });
+        }
+      } catch (e) {
+        setToast({ message: 'Error validating API key', type: 'error' });
+      }
     }
+
+    validate();
   }, [apiKey]);
 
   return (

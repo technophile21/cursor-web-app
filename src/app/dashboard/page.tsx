@@ -7,6 +7,7 @@ import CreateApiKeyDialog from '@/components/CreateApiKeyDialog';
 import Toast from '@/components/Toast';
 import Sidebar from '@/components/Sidebar';
 import { SidebarProvider, useSidebar } from '@/context/SidebarContext';
+import { useCreateApiKeyDialogController } from '@/controllers/useCreateApiKeyDialogController';
 
 const PASS_PHRASE = 'password';
 
@@ -190,6 +191,12 @@ function DashboardContent() {
       setErrorDialog('Failed to copy API key to clipboard');
     }
   };
+
+  // Controller for CreateApiKeyDialog
+  const createApiKeyDialog = useCreateApiKeyDialogController({
+    onSubmit: handleCreateKey,
+    onClose: () => setIsCreateDialogOpen(false),
+  });
 
   if (loading && !useMockData) {
     return <div className="p-8">Loading...</div>;
@@ -410,10 +417,10 @@ function DashboardContent() {
           </div>
 
           {/* Create API Key Dialog */}
-          <CreateApiKeyDialog 
+          <CreateApiKeyDialog
             isOpen={isCreateDialogOpen}
             onClose={() => setIsCreateDialogOpen(false)}
-            onSubmit={handleCreateKey}
+            {...createApiKeyDialog}
           />
 
           {/* Passphrase Modal */}

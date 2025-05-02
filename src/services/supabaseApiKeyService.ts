@@ -11,8 +11,8 @@ const camelToSnake = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter
 const snakeToCamel = (str: string) => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 
 // Function to transform object keys from camelCase to snake_case
-const transformToSnakeCase = (obj: Record<string, any>): Record<string, any> => {
-  const result: Record<string, any> = {};
+const transformToSnakeCase = (obj: Record<string, unknown>): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
   Object.keys(obj).forEach(key => {
     result[camelToSnake(key)] = obj[key];
   });
@@ -20,8 +20,8 @@ const transformToSnakeCase = (obj: Record<string, any>): Record<string, any> => 
 };
 
 // Function to transform object keys from snake_case to camelCase
-const transformToCamelCase = (obj: Record<string, any>): Record<string, any> => {
-  const result: Record<string, any> = {};
+const transformToCamelCase = (obj: Record<string, unknown>): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
   Object.keys(obj).forEach(key => {
     result[snakeToCamel(key)] = obj[key];
   });
@@ -40,7 +40,7 @@ export const supabaseApiKeyService = {
     }
     
     // Transform array of objects from snake_case to camelCase
-    return data ? data.map(item => transformToCamelCase(item) as ApiKey) : [];
+    return data ? data.map(item => transformToCamelCase(item) as unknown as ApiKey) : [];
   },
 
   async create(dto: CreateApiKeyDto): Promise<ApiKey> {
@@ -64,7 +64,7 @@ export const supabaseApiKeyService = {
     };
     
     // Transform to snake_case for database insertion
-    const newApiKeySnake = transformToSnakeCase(newApiKeyCamel);
+    const newApiKeySnake = transformToSnakeCase(newApiKeyCamel as unknown as Record<string, unknown>);
     
     const { data, error } = await supabase
       .from(TABLE_NAME)
@@ -78,7 +78,7 @@ export const supabaseApiKeyService = {
     }
     
     // Transform result back to camelCase
-    return transformToCamelCase(data) as ApiKey;
+    return transformToCamelCase(data) as unknown as ApiKey;
   },
 
   async update(id: string, dto: UpdateApiKeyDto): Promise<ApiKey> {
@@ -96,7 +96,7 @@ export const supabaseApiKeyService = {
     }
     
     // Transform update data to snake_case
-    const updateDataSnake = transformToSnakeCase(dto);
+    const updateDataSnake = transformToSnakeCase(dto as Record<string, unknown>);
     
     const { data, error } = await supabase
       .from(TABLE_NAME)
@@ -111,7 +111,7 @@ export const supabaseApiKeyService = {
     }
     
     // Transform result back to camelCase
-    return transformToCamelCase(data) as ApiKey;
+    return transformToCamelCase(data) as unknown as ApiKey;
   },
 
   async delete(id: string): Promise<void> {

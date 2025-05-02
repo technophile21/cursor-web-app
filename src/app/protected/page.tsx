@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Toast from '@/components/Toast';
 import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
@@ -23,7 +23,7 @@ export default function ProtectedPage() {
         } else {
           setToast({ message: 'api_key_invalid', type: 'error' });
         }
-      } catch (e) {
+      } catch {
         setToast({ message: 'api_key_validation_error', type: 'error' });
       }
     }
@@ -35,17 +35,19 @@ export default function ProtectedPage() {
     <div className="relative min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)} />
       <main className={sidebarOpen ? 'ml-64 px-6 pt-6 transition-all duration-200' : 'px-6 pt-6 transition-all duration-200'}>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">{strings.protected_page_title}</h1>
-          <p className="mb-2">{strings.api_key_label}: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{apiKey}</span></p>
-          {toast && (
-            <Toast
-              message={toast.message}
-              type={toast.type}
-              onClose={() => setToast(null)}
-            />
-          )}
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <div className="flex flex-col items-center justify-center min-h-screen">
+            <h1 className="text-2xl font-bold mb-4">{strings.protected_page_title}</h1>
+            <p className="mb-2">{strings.api_key_label}: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{apiKey}</span></p>
+            {toast && (
+              <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+              />
+            )}
+          </div>
+        </Suspense>
       </main>
     </div>
   );

@@ -2,7 +2,7 @@ import { ApiKey } from '@/types/apiKey';
 
 // In-memory storage for demo purposes
 // In a real application, you would use a database
-let apiKeys: ApiKey[] = [];
+const apiKeys: ApiKey[] = [];
 
 export const apiKeyStorage = {
   getAll: () => apiKeys,

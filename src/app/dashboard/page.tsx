@@ -63,9 +63,7 @@ function DashboardContent() {
   const [useMockData, setUseMockData] = useState(true);
   const apiKeys = useMockData ? MOCK_DATA : realApiKeys;
 
-  const [newKeyName, setNewKeyName] = useState('');
   const [showNewKey, setShowNewKey] = useState<ApiKey | null>(null);
-  const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [showPassPhraseInput, setShowPassPhraseInput] = useState<string | null>(null);
   const [passPhrase, setPassPhrase] = useState('');
   const [passPhraseError, setPassPhraseError] = useState(false);
@@ -103,49 +101,10 @@ function DashboardContent() {
     return newKey;
   };
 
-  const handleToggleActive = async (id: string, isActive: boolean) => {
-    // Don't update mock data
-    if (useMockData) {
-      setErrorDialog("This is demo data. Create your own API key to enable full functionality.");
-      return;
-    }
-
-    try {
-      await updateApiKey(id, { isActive: !isActive });
-    } catch (error) {
-      // Error is already set in the error dialog by the generalError effect
-      // No need to do anything here
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    // Don't delete mock data
-    if (useMockData) {
-      setErrorDialog("This is demo data. Create your own API key to enable full functionality.");
-      return;
-    }
-
-    if (window.confirm('Are you sure you want to delete this API key?')) {
-      try {
-        await deleteApiKey(id);
-      } catch (error) {
-        // Error is already set in the error dialog by the generalError effect
-        // No need to do anything here
-      }
-    }
-  };
-
-  const maskApiKey = (key: string) => {
-    if (key.length <= 8) return '*'.repeat(key.length);
-    return `${key.slice(0, 12)}${'*'.repeat(key.length - 24)}${key.slice(-12)}`;
-  };
-
   // Table controller for API keys table operations
   const tableController = useApiKeysTableController({
-    apiKeys,
     updateApiKey,
     deleteApiKey,
-    useMockData,
   });
 
   // Handler for requesting reveal (opens passphrase modal)
@@ -175,10 +134,9 @@ function DashboardContent() {
   const handleCopyKey = async (key: string) => {
     try {
       await navigator.clipboard.writeText(key);
-      setRevealedKeys(prev => new Set([...prev, key]));
       setShowPassPhraseInput(null);
       setPassPhraseError(false);
-    } catch (error) {
+    } catch {
       setErrorDialog('Failed to copy API key to clipboard');
     }
   };

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { strings } from '@/constants/strings';
 
 interface ToastProps {
   message: string;
@@ -27,7 +28,7 @@ export default function Toast({ message, onClose, duration = 5000, type = 'info'
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
       <div className={`${typeStyles[type]} text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium`}>
-        {message}
+        {strings[message] || message}
       </div>
     </div>
   );

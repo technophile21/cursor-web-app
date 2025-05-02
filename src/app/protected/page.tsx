@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Toast from '@/components/Toast';
 import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
+import { strings } from '@/constants/strings';
 
 export default function ProtectedPage() {
   const searchParams = useSearchParams();
@@ -16,12 +17,12 @@ export default function ProtectedPage() {
       try {
         const isValid = await supabaseApiKeyService.validateKey(apiKey);
         if (isValid) {
-          setToast({ message: 'Valid API key', type: 'success' });
+          setToast({ message: 'api_key_valid', type: 'success' });
         } else {
-          setToast({ message: 'Invalid API key', type: 'error' });
+          setToast({ message: 'api_key_invalid', type: 'error' });
         }
       } catch (e) {
-        setToast({ message: 'Error validating API key', type: 'error' });
+        setToast({ message: 'api_key_validation_error', type: 'error' });
       }
     }
 
@@ -30,8 +31,8 @@ export default function ProtectedPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Protected Page</h1>
-      <p className="mb-2">API Key: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{apiKey}</span></p>
+      <h1 className="text-2xl font-bold mb-4">{strings.protected_page_title}</h1>
+      <p className="mb-2">{strings.api_key_label}: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{apiKey}</span></p>
       {toast && (
         <Toast
           message={toast.message}

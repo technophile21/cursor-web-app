@@ -1,0 +1,60 @@
+export const strings = {
+  // Toast messages
+  api_key_valid: 'Valid API key',
+  api_key_invalid: 'Invalid API key',
+  api_key_validation_error: 'Error validating API key',
+
+  // Protected page
+  protected_page_title: 'Protected Page',
+  api_key_label: 'API Key',
+
+  // Playground page
+  playground_title: 'API Playground',
+  playground_form_submit_log: 'Form submitted with API key:',
+  playground_redirect_log: 'Redirecting to:',
+  playground_navigation_error_log: 'Navigation error:',
+  playground_api_key_empty_log: 'API key is empty',
+  playground_input_changed_log: 'Input changed:',
+  playground_api_key_placeholder: 'Enter your API key',
+  playground_submit_button: 'Submit',
+  playground_submit_button_log: 'Submit button clicked',
+
+  // Dashboard page
+  dashboard_demo_mode_title: 'Demo Mode',
+  dashboard_demo_mode_desc: "You're viewing sample data. Create your own API key to start managing real data.",
+  dismiss: 'Dismiss',
+  error: 'Error',
+  dismiss_error: 'Dismiss error',
+  dashboard_current_plan: 'CURRENT PLAN',
+  dashboard_manage_plan: 'Manage Plan',
+  dashboard_plan_name: 'Researcher',
+  dashboard_api_usage: 'API Usage',
+  dashboard_plan_label: 'Plan',
+  dashboard_credits: 'Credits',
+  dashboard_payg: 'Pay as you go',
+  dashboard_new_key_title: 'New API Key Created!',
+  dashboard_new_key_desc: "Please copy your API key now. You won't be able to see it again!",
+  dashboard_api_keys_title: 'API Keys',
+  dashboard_api_keys_desc_1: 'The key is used to authenticate your requests to the',
+  dashboard_api_keys_desc_2: 'Research API',
+  dashboard_api_keys_desc_3: 'To learn more, see the',
+  dashboard_api_keys_desc_4: 'documentation',
+  dashboard_api_keys_desc_5: 'page.',
+  dashboard_no_api_keys: "You don't have any API keys yet. Click the + button to create one.",
+  dashboard_passphrase_title: 'Enter passphrase',
+  dashboard_passphrase_placeholder: 'Enter passphrase',
+  dashboard_passphrase_error: 'Incorrect passphrase',
+  cancel: 'Cancel',
+  submit: 'Submit',
+  dashboard_api_key_copied: 'API key copied to clipboard',
+
+  // Main app page
+  home_get_started: 'Get started by editing',
+  home_save_and_see: 'Save and see your changes instantly.',
+  home_deploy_now: 'Deploy now',
+  home_dashboard: 'Dashboard',
+  home_read_docs: 'Read our docs',
+  home_learn: 'Learn',
+  home_examples: 'Examples',
+  home_nextjs: 'Go to nextjs.org →',
+}; 

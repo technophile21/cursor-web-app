@@ -6,6 +6,7 @@ import { ApiKey } from '@/types/apiKey';
 import CreateApiKeyDialog from '@/components/CreateApiKeyDialog';
 import Toast from '@/components/Toast';
 import Sidebar from '@/components/Sidebar';
+import { SidebarProvider, useSidebar } from '@/context/SidebarContext';
 
 const PASS_PHRASE = 'password';
 
@@ -44,7 +45,7 @@ const MOCK_DATA: ApiKey[] = [
   }
 ];
 
-export default function Dashboard() {
+function DashboardContent() {
   const {
     apiKeys: realApiKeys,
     loading,
@@ -68,7 +69,7 @@ export default function Dashboard() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [payAsYouGo, setPayAsYouGo] = useState(false);
   const [showCopyToast, setShowCopyToast] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
 
   // Show general error in error dialog
   useEffect(() => {
@@ -465,5 +466,13 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <SidebarProvider>
+      <DashboardContent />
+    </SidebarProvider>
   );
 } 

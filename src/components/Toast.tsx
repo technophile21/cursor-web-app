@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { strings } from '@/constants/strings';
 
 interface ToastProps {
   message: string;
@@ -16,7 +15,7 @@ const typeStyles = {
   info: 'bg-blue-500',
 };
 
-export default function Toast({ message, onClose, duration = 5000, type = 'info' }: ToastProps) {
+export default function Toast({ message, onClose, duration = 3000, type = 'info' }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -26,9 +25,15 @@ export default function Toast({ message, onClose, duration = 5000, type = 'info'
   }, [duration, onClose]);
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-      <div className={`${typeStyles[type]} text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium`}>
-        {(strings as Record<string, string>)[message] || message}
+    <div className="fixed bottom-4 right-4 z-50">
+      <div className={`${typeStyles[type]} text-white px-6 py-3 rounded-lg shadow-lg flex items-center`}>
+        <span>{message}</span>
+        <button
+          onClick={onClose}
+          className="ml-4 text-white/70 hover:text-white"
+        >
+          ✕
+        </button>
       </div>
     </div>
   );

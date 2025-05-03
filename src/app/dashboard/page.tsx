@@ -11,6 +11,8 @@ import { useCreateApiKeyDialogController } from '@/controllers/useCreateApiKeyDi
 import { useApiKeysTableController } from '@/controllers/useApiKeysTableController';
 import ApiKeysTable from '@/components/ApiKeysTable';
 import { strings } from '@/constants/strings';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const PASS_PHRASE = 'password';
 
@@ -20,36 +22,22 @@ const MOCK_DATA: ApiKey[] = [
     id: 'mock-1',
     name: 'Production API Key',
     key: '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',
-    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
-    lastUsed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    lastUsed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     isActive: true
   },
   {
     id: 'mock-2',
     name: 'Development API Key',
     key: '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',
-    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
-    lastUsed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-    isActive: true
-  },
-  {
-    id: 'mock-3',
-    name: 'Testing API Key',
-    key: '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',
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-    isActive: false
-  },
-  {
-    id: 'mock-4',
-    name: 'Staging API Key',
-    key: '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',
-    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
-    lastUsed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    lastUsed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     isActive: true
   }
 ];
 
 function DashboardContent() {
+  const { data: session, status } = useSession();
   const {
     apiKeys: realApiKeys,
     loading,
@@ -71,6 +59,13 @@ function DashboardContent() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [payAsYouGo, setPayAsYouGo] = useState(false);
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      redirect('/');
+    }
+  }, [status]);
 
   // Show general error in error dialog
   useEffect(() => {
@@ -94,7 +89,7 @@ function DashboardContent() {
 
   const handleCreateKey = async (data: { name: string }) => {
     setErrorDialog(null);
-    setUseMockData(false); // Switch to real data when creating a key
+    setUseMockData(false);
     
     const newKey = await createApiKey({ name: data.name });
     setShowNewKey(newKey);

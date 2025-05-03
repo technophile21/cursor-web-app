@@ -6,11 +6,10 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 import { strings } from '@/constants/strings';
 import Sidebar from '@/components/Sidebar';
 
-export default function ProtectedPage() {
+function ProtectedPageContent() {
   const searchParams = useSearchParams();
   const apiKey = searchParams.get('apiKey') || '';
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!apiKey) return;
@@ -30,6 +29,24 @@ export default function ProtectedPage() {
 
     validate();
   }, [apiKey]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">{strings.protected_page_title}</h1>
+      <p className="mb-2">{strings.api_key_label}: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{apiKey}</span></p>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function ProtectedPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="relative min-h-screen">

@@ -4,7 +4,7 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function PATCH(
   request: NextRequest,
-  context: any 
+  context: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ) {
   const { id } = context.params;  
   try {
@@ -24,9 +24,10 @@ export async function PATCH(
   }
 }
 
+
 export async function DELETE(
   request: NextRequest,
-  context: any
+  context: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ) {
   const { id } = context.params;
   try {

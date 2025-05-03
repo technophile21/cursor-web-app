@@ -135,4 +135,22 @@ export const supabaseApiKeyService = {
       .single();
     return !!(data && !error);
   },
+
+  async upsertUser(user: { email: string; name?: string | null; image?: string | null }) {
+    const { data, error } = await supabase
+      .from('users')
+      .upsert(
+        {
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        },
+        { onConflict: 'email' }
+      );
+    if (error) {
+      console.error('Supabase user upsert error:', error);
+      throw error;
+    }
+    return data;
+  },
 }; 

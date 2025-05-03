@@ -4,7 +4,7 @@ import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ) {
   const { id } = context.params;  
   try {

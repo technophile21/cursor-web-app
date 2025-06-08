@@ -37,7 +37,7 @@ const MOCK_DATA: ApiKey[] = [
 ];
 
 function DashboardContent() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const {
     apiKeys: realApiKeys,
     loading,

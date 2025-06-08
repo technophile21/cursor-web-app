@@ -88,15 +88,6 @@ export default function LandingPage(): React.JSX.Element {
                   View Demo
                 </Button>
               </div>
-              <div className="w-full max-w-4xl mt-12">
-                <Image
-                  src="/placeholder.svg?height=400&width=800"
-                  width={800}
-                  height={400}
-                  alt="Manik GitHub Analyzer Dashboard"
-                  className="mx-auto rounded-lg border shadow-2xl"
-                />
-              </div>
             </div>
           </div>
         </section>

@@ -32,6 +32,11 @@ export default function LandingPage(): React.JSX.Element {
             <Link className="text-sm font-medium hover:underline underline-offset-4" href="#about">
               About
             </Link>
+            {session && (
+              <Link className="text-sm font-medium hover:underline underline-offset-4" href="/dashboard">
+                Dashboard
+              </Link>
+            )}
           </nav>
           <div className="ml-4 flex gap-2">
             {session ? (

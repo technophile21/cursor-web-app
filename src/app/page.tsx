@@ -8,8 +8,11 @@ import { Github, Star, GitPullRequest, BarChart3, Zap, TrendingUp, Check, ArrowR
 import Link from "next/link"
 import Image from "next/image"
 import React from 'react'
+import { signIn, signOut, useSession } from "next-auth/react"
 
 export default function LandingPage(): React.JSX.Element {
+  const { data: session } = useSession();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
       {/* Header */}
@@ -31,10 +34,23 @@ export default function LandingPage(): React.JSX.Element {
             </Link>
           </nav>
           <div className="ml-4 flex gap-2">
-            <Button variant="ghost" size="sm">
-              Log In
-            </Button>
-            <Button size="sm">Sign Up</Button>
+            {session ? (
+              <>
+                <span className="text-sm font-medium text-muted-foreground">
+                  {session.user?.email}
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => signIn('google')}>
+                  Sign In
+                </Button>
+                <Button size="sm" onClick={() => signIn('google')}>Sign Up</Button>
+              </>
+            )}
           </div>
         </div>
       </header>

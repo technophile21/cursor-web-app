@@ -48,7 +48,8 @@ export const supabaseApiKeyService = {
     const { data: existingKeys } = await supabase
       .from(TABLE_NAME)
       .select('name')
-      .ilike('name', dto.name);
+      .ilike('name', dto.name)
+      .eq('user_id', dto.userId);
     
     if (existingKeys && existingKeys.length > 0) {
       throw new Error('API key name must be unique');
@@ -61,6 +62,7 @@ export const supabaseApiKeyService = {
       key: `sk-${uuidv4()}`,
       createdAt: new Date().toISOString(),
       isActive: true,
+      userId: dto.userId
     };
     
     // Transform to snake_case for database insertion
@@ -152,5 +154,20 @@ export const supabaseApiKeyService = {
       throw error;
     }
     return data;
+  },
+
+  async getById(id: string): Promise<ApiKey | null> {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      console.error('Error fetching API key:', error)
+      throw new Error('Failed to fetch API key')
+    }
+
+    return data ? transformToCamelCase(data) as unknown as ApiKey : null
   },
 }; 

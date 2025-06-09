@@ -24,7 +24,8 @@ const MOCK_DATA: ApiKey[] = [
     key: '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',
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
     lastUsed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    isActive: true
+    isActive: true,
+    userId: 'mock-user-1'
   },
   {
     id: 'mock-2',
@@ -32,12 +33,13 @@ const MOCK_DATA: ApiKey[] = [
     key: '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',
     createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
     lastUsed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    isActive: true
+    isActive: true,
+    userId: 'mock-user-1'
   }
 ];
 
 function DashboardContent() {
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const {
     apiKeys: realApiKeys,
     loading,

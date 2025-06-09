@@ -2,7 +2,8 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
 interface SessionUser {
 	id: string
@@ -19,9 +20,26 @@ export async function requireAuth() {
 	return session;
 }
 
-export async function getSessionUser(): Promise<{ user: SessionUser | null; error: NextResponse | null }> {
+export async function getSessionUser(request?: NextRequest): Promise<{ user: SessionUser | null; error: NextResponse | null }> {
 	try {
-		const session = await getServerSession();
+		let session;
+		
+		if (request) {
+			// Get token from Authorization header
+			const token = await getToken({ req: request });
+			if (!token) {
+				return {
+					user: null,
+					error: NextResponse.json(
+						{ error: 'Unauthorized' },
+						{ status: 401 }
+					)
+				};
+			}
+			session = { user: { email: token.email } };
+		} else {
+			session = await getServerSession();
+		}
 
 		if (!session?.user?.email) {
 			return {

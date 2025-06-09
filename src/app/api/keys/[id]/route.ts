@@ -11,7 +11,7 @@ export async function GET(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const { user, error } = await getSessionUser();
+		const { user, error } = await getSessionUser(request);
 		if (error) return error;
 		if (!user) {
 			return NextResponse.json(
@@ -63,7 +63,7 @@ export async function PATCH(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const { user, error } = await getSessionUser();
+		const { user, error } = await getSessionUser(request);
 		if (error) return error;
 		if (!user) {
 			return NextResponse.json(
@@ -102,7 +102,10 @@ export async function PATCH(
 
 		// Parse request body
 		const body = await request.json();
-		const updateApiKeyDto: UpdateApiKeyDto = body;
+		const updateApiKeyDto: UpdateApiKeyDto = {
+			name: body.name,
+			isActive: body.isActive
+		};
 
 		// Update API key
 		const updatedApiKey = await supabaseApiKeyService.update(params.id, updateApiKeyDto);
@@ -122,7 +125,7 @@ export async function DELETE(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const { user, error } = await getSessionUser();
+		const { user, error } = await getSessionUser(request);
 		if (error) return error;
 		if (!user) {
 			return NextResponse.json(

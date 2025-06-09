@@ -43,7 +43,7 @@ export const supabaseApiKeyService = {
     return data ? data.map(item => transformToCamelCase(item) as unknown as ApiKey) : [];
   },
 
-  async create(dto: CreateApiKeyDto): Promise<ApiKey> {
+  async create(dto: CreateApiKeyDto & { userId: string }): Promise<ApiKey> {
     // Check for name uniqueness
     const { data: existingKeys } = await supabase
       .from(TABLE_NAME)

@@ -10,10 +10,9 @@ export interface ApiKey {
 
 export interface CreateApiKeyDto {
   name: string;
-  userId: string;
 }
 
 export interface UpdateApiKeyDto {
   name?: string;
-  isActive?: boolean;        // maps to 'is_active' in database
+  isActive?: boolean;
 } 

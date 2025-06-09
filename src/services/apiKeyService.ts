@@ -1,10 +1,20 @@
 import { ApiKey, CreateApiKeyDto, UpdateApiKeyDto } from '@/types/apiKey';
+import { getSession } from 'next-auth/react';
 
 const API_BASE_URL = '/api/keys';
 
+const getHeaders = async () => {
+  const session = await getSession();
+  return {
+    'Content-Type': 'application/json',
+    ...(session?.user?.accessToken ? { Authorization: `Bearer ${session.user.accessToken}` } : {})
+  };
+};
+
 export const apiKeyService = {
   async getAll(): Promise<ApiKey[]> {
-    const response = await fetch(API_BASE_URL);
+    const headers = await getHeaders();
+    const response = await fetch(API_BASE_URL, { headers });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error || 'Failed to fetch API keys';
@@ -14,11 +24,10 @@ export const apiKeyService = {
   },
 
   async create(data: CreateApiKeyDto): Promise<ApiKey> {
+    const headers = await getHeaders();
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(data),
     });
     
@@ -32,11 +41,10 @@ export const apiKeyService = {
   },
 
   async update(id: string, data: UpdateApiKeyDto): Promise<ApiKey> {
+    const headers = await getHeaders();
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(data),
     });
     
@@ -50,8 +58,10 @@ export const apiKeyService = {
   },
 
   async delete(id: string): Promise<void> {
+    const headers = await getHeaders();
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'DELETE',
+      headers,
     });
     
     if (!response.ok) {

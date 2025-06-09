@@ -8,7 +8,7 @@ import { getSessionUser } from '@/utils/auth'
 
 export async function GET(request: NextRequest) {
 	try {
-		const { user, error } = await getSessionUser()
+		const { user, error } = await getSessionUser(request)
 		if (error) return error
 		if (!user) {
 			return NextResponse.json(
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const { user, error } = await getSessionUser()
+		const { user, error } = await getSessionUser(request)
 		if (error) return error
 		if (!user) {
 			return NextResponse.json(
@@ -59,12 +59,14 @@ export async function POST(request: NextRequest) {
 		// Parse request body
 		const body = await request.json()
 		const createApiKeyDto: CreateApiKeyDto = {
-			...body,
-			userId: user.id
+			name: body.name
 		}
 
-		// Create new API key
-		const newApiKey = await supabaseApiKeyService.create(createApiKeyDto)
+		// Create new API key with user ID from token
+		const newApiKey = await supabaseApiKeyService.create({
+			...createApiKeyDto,
+			userId: user.id
+		})
 
 		return NextResponse.json(newApiKey, { status: 201 })
 	} catch (error) {

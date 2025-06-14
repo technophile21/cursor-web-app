@@ -1,45 +1,10 @@
+import { supabase } from "@/lib/supabase";
 import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server'
 
-interface SessionUser {
-	id: string
-	email: string
-}
-
-export async function requireAuth() {
-	const session = await getServerSession();
-	
-	if (!session) {
-		redirect("/");
-	}
-	
-	return session;
-}
-
-export async function getSessionUser(request?: NextRequest): Promise<{ user: SessionUser | null; error: NextResponse | null }> {
+export async function getSessionUser() {
 	try {
-		let session;
-		
-		if (request) {
-			// Get token from Authorization header
-			const token = await getToken({ req: request });
-			if (!token) {
-				return {
-					user: null,
-					error: NextResponse.json(
-						{ error: 'Unauthorized' },
-						{ status: 401 }
-					)
-				};
-			}
-			session = { user: { email: token.email } };
-		} else {
-			session = await getServerSession();
-		}
+		const session = await getServerSession();
 
 		if (!session?.user?.email) {
 			return {
@@ -50,9 +15,6 @@ export async function getSessionUser(request?: NextRequest): Promise<{ user: Ses
 				)
 			}
 		}
-
-		// Initialize Supabase client
-		const supabase = createRouteHandlerClient({ cookies })
 
 		// Get user from database using email
 		const { data: user, error: userError } = await supabase
@@ -72,10 +34,7 @@ export async function getSessionUser(request?: NextRequest): Promise<{ user: Ses
 		}
 
 		return {
-			user: {
-				id: user.id,
-				email: session.user.email
-			},
+			user: user,
 			error: null
 		}
 	} catch (error) {

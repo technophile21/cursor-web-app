@@ -1,33 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { supabaseApiKeyService } from '@/services/supabaseApiKeyService';
 import { UpdateApiKeyDto, ApiKey } from '@/types/apiKey';
 import { transformToCamelCase } from '@/utils/caseTransform';
-import { getSessionUser } from '@/utils/auth';
+import { validateUserSession } from '@/utils/validateUserSession';
+import { supabase } from '@/lib/supabase';
+
+type RouteParams = {
+	params: Promise<{
+		id: string
+	}>
+}
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { id: string } }
+	context: RouteParams
 ) {
 	try {
-		const { user, error } = await getSessionUser(request);
+		const { user, error } = await validateUserSession();
 		if (error) return error;
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			);
-		}
 
-		// Initialize Supabase client
-		const supabase = createRouteHandlerClient({ cookies });
+		const { id } = await context.params;
 
 		// Get API key by ID
 		const { data: apiKey, error: apiKeyError } = await supabase
 			.from('api_keys')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (apiKeyError || !apiKey) {
@@ -60,26 +58,19 @@ export async function GET(
 
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: { id: string } }
+	context: RouteParams
 ) {
 	try {
-		const { user, error } = await getSessionUser(request);
+		const { user, error } = await validateUserSession();
 		if (error) return error;
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			);
-		}
 
-		// Initialize Supabase client
-		const supabase = createRouteHandlerClient({ cookies });
+		const { id } = await context.params;
 
 		// Get API key by ID
 		const { data: apiKey, error: apiKeyError } = await supabase
 			.from('api_keys')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (apiKeyError || !apiKey) {
@@ -108,7 +99,7 @@ export async function PATCH(
 		};
 
 		// Update API key
-		const updatedApiKey = await supabaseApiKeyService.update(params.id, updateApiKeyDto);
+		const updatedApiKey = await supabaseApiKeyService.update(id, updateApiKeyDto);
 
 		return NextResponse.json(updatedApiKey);
 	} catch (error) {
@@ -122,26 +113,19 @@ export async function PATCH(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { id: string } }
+	context: RouteParams
 ) {
 	try {
-		const { user, error } = await getSessionUser(request);
+		const { user, error } = await validateUserSession();
 		if (error) return error;
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			);
-		}
 
-		// Initialize Supabase client
-		const supabase = createRouteHandlerClient({ cookies });
+		const { id } = await context.params;
 
 		// Get API key by ID
 		const { data: apiKey, error: apiKeyError } = await supabase
 			.from('api_keys')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (apiKeyError || !apiKey) {
@@ -163,7 +147,7 @@ export async function DELETE(
 		}
 
 		// Delete API key
-		await supabaseApiKeyService.delete(params.id);
+		await supabaseApiKeyService.delete(id);
 
 		return new NextResponse(null, { status: 204 });
 	} catch (error) {

@@ -1,24 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 import { supabaseApiKeyService } from '@/services/supabaseApiKeyService'
 import { CreateApiKeyDto, ApiKey } from '@/types/apiKey'
 import { transformToCamelCase } from '@/utils/caseTransform'
-import { getSessionUser } from '@/utils/auth'
+import { validateUserSession } from '@/utils/validateUserSession'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
 	try {
-		const { user, error } = await getSessionUser(request)
+		const { user, error } = await validateUserSession()
 		if (error) return error
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			)
-		}
-
-		// Initialize Supabase client
-		const supabase = createRouteHandlerClient({ cookies })
 
 		// Get all API keys for the user
 		const { data: apiKeys, error: apiKeysError } = await supabase
@@ -47,14 +37,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const { user, error } = await getSessionUser(request)
+		const { user, error } = await validateUserSession()
 		if (error) return error
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'User not found' },
-				{ status: 404 }
-			)
-		}
 
 		// Parse request body
 		const body = await request.json()

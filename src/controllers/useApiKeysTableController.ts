@@ -10,6 +10,9 @@ export function useApiKeysTableController({
 }) {
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [showCopyToast, setShowCopyToast] = useState(false);
+  const [showRenameToast, setShowRenameToast] = useState(false);
+  const [selectedApiKey, setSelectedApiKey] = useState<ApiKey | null>(null);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
 
   const maskApiKey = useCallback((key: string) => {
     if (key.length <= 8) return '*'.repeat(key.length);
@@ -35,6 +38,7 @@ export function useApiKeysTableController({
   const handleCopyKey = useCallback(async (key: string) => {
     await navigator.clipboard.writeText(key);
     setShowCopyToast(true);
+    setTimeout(() => setShowCopyToast(false), 3000);
   }, []);
 
   const handleToggleActive = useCallback(async (id: string, isActive: boolean) => {
@@ -45,15 +49,36 @@ export function useApiKeysTableController({
     await deleteApiKey(id);
   }, [deleteApiKey]);
 
+  const handleRename = useCallback(async (id: string, newName: string) => {
+    await updateApiKey(id, { name: newName });
+    setShowRenameToast(true);
+    setTimeout(() => setShowRenameToast(false), 3000);
+  }, [updateApiKey]);
+
+  const openRenameModal = useCallback((apiKey: ApiKey) => {
+    setSelectedApiKey(apiKey);
+    setIsRenameModalOpen(true);
+  }, []);
+
+  const closeRenameModal = useCallback(() => {
+    setIsRenameModalOpen(false);
+    setSelectedApiKey(null);
+  }, []);
+
   return {
     revealedKeys,
     showCopyToast,
-    setShowCopyToast,
+    showRenameToast,
+    selectedApiKey,
+    isRenameModalOpen,
     maskApiKey,
     revealKey,
     handleHideKey,
     handleCopyKey,
     handleToggleActive,
     handleDelete,
+    handleRename,
+    openRenameModal,
+    closeRenameModal,
   };
 } 

@@ -281,7 +281,12 @@ function DashboardContent() {
               onCopyKey={handleCopyKey}
               onToggleActive={tableController.handleToggleActive}
               onDelete={tableController.handleDelete}
+              onRename={tableController.handleRename}
               maskApiKey={tableController.maskApiKey}
+              selectedApiKey={tableController.selectedApiKey}
+              isRenameModalOpen={tableController.isRenameModalOpen}
+              onOpenRenameModal={tableController.openRenameModal}
+              onCloseRenameModal={tableController.closeRenameModal}
             />
 
             {/* No API Keys Message */}

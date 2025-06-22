@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { FaHome, FaCode, FaBook, FaCog, FaCreditCard, FaUserCircle, FaExternalLinkAlt, FaListUl, FaGlobe, FaBars, FaTimes, FaCube } from 'react-icons/fa';
+import { FaHome, FaCode, FaBook, FaCog, FaCreditCard, FaUserCircle, FaExternalLinkAlt, FaListUl, FaGlobe, FaBars, FaTimes, FaCube, FaSignOutAlt } from 'react-icons/fa';
 import React from 'react';
+import { signOut } from 'next-auth/react';
 
 interface SidebarProps {
   open: boolean;
@@ -9,6 +10,10 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ open, onClose, onOpen }: SidebarProps) {
+  const handleLogout = () => {
+    signOut({ callbackUrl: '/' });
+  };
+
   return (
     <>
       {/* Hamburger menu for opening sidebar */}
@@ -51,11 +56,11 @@ export default function Sidebar({ open, onClose, onOpen }: SidebarProps) {
           <nav className="flex flex-col gap-1 px-2">
             <SidebarLink href="/dashboard" icon={<FaHome />} label="Overview" />
             <SidebarLink href="/playground" icon={<FaCode />} label="API Playground" />
-            <SidebarLink href="#" icon={<FaListUl />} label="Use Cases" />
-            <SidebarLink href="#" icon={<FaCreditCard />} label="Billing" />
+            {/* <SidebarLink href="#" icon={<FaListUl />} label="Use Cases" /> */}
+            {/* <SidebarLink href="#" icon={<FaCreditCard />} label="Billing" /> */}
             <SidebarLink href="#" icon={<FaCog />} label="Settings" />
             <SidebarLink href="#" icon={<FaBook />} label="Documentation" external />
-            <SidebarLink href="#" icon={<FaGlobe />} label="Tavily MCP" external />
+            {/* <SidebarLink href="#" icon={<FaGlobe />} label="Tavily MCP" external /> */}
           </nav>
         </div>
         {/* User profile */}
@@ -64,8 +69,13 @@ export default function Sidebar({ open, onClose, onOpen }: SidebarProps) {
           <div className="flex-1">
             <div className="font-medium text-gray-800">John Reese</div>
           </div>
-          <button className="ml-auto text-gray-400 hover:text-gray-600">
-            <FaUserCircle size={22} />
+          <button 
+            className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+            onClick={handleLogout}
+            aria-label="Logout"
+            title="Logout"
+          >
+            <FaSignOutAlt size={20} />
           </button>
         </div>
       </aside>

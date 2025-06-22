@@ -84,7 +84,16 @@ export default function LandingPage(): React.JSX.Element {
                   Start Free Analysis
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="lg" className="h-12 px-8">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="h-12 px-8"
+                  onClick={() => {
+                    document.getElementById('api-demo')?.scrollIntoView({ 
+                      behavior: 'smooth' 
+                    })
+                  }}
+                >
                   View Demo
                 </Button>
               </div>
@@ -230,7 +239,7 @@ export default function LandingPage(): React.JSX.Element {
         </section>
 
         {/* API Demo Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-blue-50 border-t border-b border-blue-100">
+        <section id="api-demo" className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center bg-blue-50 border-t border-b border-blue-100">
           <div className="container px-4 md:px-6 mx-auto flex flex-col items-center justify-center text-center">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-8">
               <div className="space-y-2">

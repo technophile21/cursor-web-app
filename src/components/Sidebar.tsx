@@ -34,8 +34,10 @@ export default function Sidebar({ open, onClose, onOpen }: SidebarProps) {
         <div>
           {/* Logo and close button */}
           <div className="flex items-center gap-3 px-6 py-6 relative">
-            <FaCube className="text-blue-500 text-2xl flex-shrink-0" />
-            <span className="font-bold text-xl text-gray-800 whitespace-nowrap">Cursor Web App</span>
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <FaCube className="text-blue-500 text-2xl flex-shrink-0" />
+              <span className="font-bold text-xl text-gray-800 whitespace-nowrap">Cursor Web App</span>
+            </Link>
             <button
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 p-1"
               onClick={onClose}

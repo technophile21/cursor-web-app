@@ -25,7 +25,7 @@ export default function Toast({ message, onClose, duration = 3000, type = 'info'
   }, [duration, onClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
       <div className={`${typeStyles[type]} text-white px-6 py-3 rounded-lg shadow-lg flex items-center`}>
         <span>{message}</span>
         <button

@@ -36,9 +36,14 @@ export function useApiKeysTableController({
   }, []);
 
   const handleCopyKey = useCallback(async (key: string) => {
-    await navigator.clipboard.writeText(key);
-    setShowCopyToast(true);
-    setTimeout(() => setShowCopyToast(false), 3000);
+    try {
+      await navigator.clipboard.writeText(key);
+      setShowCopyToast(true);
+      setTimeout(() => setShowCopyToast(false), 3000);
+    } catch (error) {
+      console.error('Failed to copy API key to clipboard:', error);
+      // You could add error handling here if needed
+    }
   }, []);
 
   const handleToggleActive = useCallback(async (id: string, isActive: boolean) => {
@@ -80,5 +85,6 @@ export function useApiKeysTableController({
     handleRename,
     openRenameModal,
     closeRenameModal,
+    setShowCopyToast
   };
 } 

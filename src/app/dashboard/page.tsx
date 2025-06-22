@@ -128,16 +128,6 @@ function DashboardContent() {
     setUseMockData(false);
   };
 
-  const handleCopyKey = async (key: string) => {
-    try {
-      await navigator.clipboard.writeText(key);
-      setShowPassPhraseInput(null);
-      setPassPhraseError(false);
-    } catch {
-      setErrorDialog('Failed to copy API key to clipboard');
-    }
-  };
-
   // Controller for CreateApiKeyDialog
   const createApiKeyDialog = useCreateApiKeyDialogController({
     onSubmit: handleCreateKey,
@@ -278,7 +268,7 @@ function DashboardContent() {
               revealedKeys={tableController.revealedKeys}
               onRevealKey={handleRequestRevealKey}
               onHideKey={tableController.handleHideKey}
-              onCopyKey={handleCopyKey}
+              onCopyKey={tableController.handleCopyKey}
               onToggleActive={tableController.handleToggleActive}
               onDelete={tableController.handleDelete}
               onRename={tableController.handleRename}
@@ -347,7 +337,8 @@ function DashboardContent() {
           {/* Add Toast at the end of the component, just before the closing div */}
           {tableController.showCopyToast && (
             <Toast
-              message="dashboard_api_key_copied"
+              message={strings.dashboard_api_key_copied}
+              type="success"
               onClose={() => tableController.setShowCopyToast(false)}
             />
           )}
